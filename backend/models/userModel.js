@@ -6,7 +6,7 @@ var userSchema = new mongoose.Schema({
         type:String,
         required:true,
     },
-    firstname:{
+    lastname:{
         type:String,
         required:true,
     },
@@ -15,10 +15,6 @@ var userSchema = new mongoose.Schema({
         required:true,
         unique:true,
         admin:Boolean,
-    },
-    DOB:{
-        type:Number,
-        required:true,
     },
     mobile:{
         type:String,

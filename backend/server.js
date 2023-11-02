@@ -10,11 +10,16 @@ connectDB()
 
 const app = express()
 
-app.use('/', (req, res) => {
-    res.send('Hello from server')
-})
+app.use(express.json())
+app.use(express.urlencoded({ extended: false }))
 
-app.use('/api/users', userRoute);
+app.get('/', (req, res) => {
+    res.set('Content-Type', 'text/html');
+    res.send('<h1>Hello, world!</h1>');
+    res.set('X-Custom-Header', 'Some value'); // Error: Cannot set headers after they are sent to the client
+  });
+
+app.use('/api/user', userRoute);
 app.listen(PORT, () => {
     console.log(`listening on ${PORT}`)
 })

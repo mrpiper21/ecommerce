@@ -9,8 +9,8 @@ const createUser = async (req, res) => {
     return res.status(400).json({
       msg: 'Please fill in all fields'
     });
-  }
-
+  } 
+  
   const userExist = await User.findOne({ email });
 
   if (!userExist) {
@@ -28,12 +28,38 @@ const createUser = async (req, res) => {
 
     return res.json(newUser);
   } else {
-    return res.json({
-      msg: 'User already exists',
+    return res.status(400).json({
+      msg: 'User already exist!',
       success: false
     });
   }
 };
+
+const createAdmin = async (req, res) => {
+  const { firstname, lastname, email, DOB, Bussiness, mobile, password } = req.body
+  const adminExist = User.findOne( {email} )
+  if (adminExist) {
+    res.status(400).json({
+      msg: 'User already exist!',
+      success: false
+    });
+  }
+
+  if (!firstname || !lastname || !email || !DOB || !Bussiness || !mobile || !password){
+    res.status(400)
+    throw new Error('Please add all field')
+  }
+
+  const newAdmin = await User.Create({
+    firstname,
+    lastname,
+    email,
+    DOB,
+    Bussiness,
+    mobile,
+    password
+  })
+}
 
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
@@ -48,4 +74,4 @@ const loginUser = async (req, res) => {
   console.log(email, password);
 };
 
-module.exports = { createUser, loginUser };
+module.exports = { createUser, createAdmin, loginUser };

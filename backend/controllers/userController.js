@@ -1,7 +1,8 @@
 // const bcrypt = require('bcryptjs');
 const User = require('../models/userModel');
+const asyncHandler = require('express-async-handler')
 
-const createUser = async (req, res) => {
+const createUser = asyncHandler (async (req, res) => {
   const { firstname, lastname, email, mobile, password } = req.body;
 
   // Check if any required fields are missing
@@ -33,33 +34,33 @@ const createUser = async (req, res) => {
       success: false
     });
   }
-};
+})
 
-const createAdmin = async (req, res) => {
+const createAdmin = asyncHandler(async (req, res) => {
   const { firstname, lastname, email, DOB, Bussiness, mobile, password } = req.body
   const adminExist = User.findOne( {email} )
-  if (adminExist) {
+  if (!adminExist) {
+    const newAdmin = await User.create({
+      firstname,
+      lastname,
+      email,
+      Bussiness,
+      mobile,
+      password
+    })
+    return res.json({newAdmin})
+  } else {
     res.status(400).json({
       msg: 'User already exist!',
       success: false
     });
   }
 
-  if (!firstname || !lastname || !email || !DOB || !Bussiness || !mobile || !password){
+  if (!firstname || !lastname || !email || !Bussiness || !mobile || !password){
     res.status(400)
     throw new Error('Please add all field')
   }
-
-  const newAdmin = await User.Create({
-    firstname,
-    lastname,
-    email,
-    DOB,
-    Bussiness,
-    mobile,
-    password
-  })
-}
+})
 
 const loginUser = async (req, res) => {
   const { email, password } = req.body;

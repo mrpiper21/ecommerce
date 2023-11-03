@@ -16,10 +16,6 @@ var userSchema = new mongoose.Schema({
         unique:true,
         admin:Boolean,
     },
-    DOB:{
-        type:String,
-        required:true,
-    },
     Bussiness:{
         type:String,
         required:true,

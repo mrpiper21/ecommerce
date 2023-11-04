@@ -1,4 +1,4 @@
-// const bcrypt = require('bcryptjs');
+const bcrypt = require('bcryptjs');
 const User = require('../models/userModel');
 const asyncHandler = require('express-async-handler')
 
@@ -15,19 +15,21 @@ const createUser = asyncHandler (async (req, res) => {
   const userExist = await User.findOne({ email });
 
   if (!userExist) {
+
+
     // Hash password
-    // const salt = await bcrypt.genSalt(10);
-    // const hashedPassword = await bcrypt.hash(password, salt);
+    const salt = await bcrypt.genSalt(10)
+    const hashedPassword = await bcrypt.hash(password, salt)
 
     const newUser = await User.create({
       firstname,
       lastname,
       email,
       mobile,
-      password //: hashedPassword
+      password: hashedPassword
     });
-
-    return res.json(newUser);
+    return res.status(201).json(newUser);
+    
   } else {
     return res.status(400).json({
       msg: 'User already exist!',
@@ -67,11 +69,23 @@ const loginUser = async (req, res) => {
 
   const userExist = await User.findOne({ email });
 
-  if (!userExist) {
-    throw new Error('User does not exist');
+  if (!email && !password) {
+    res.status(401).json({
+      msg: 'provide all fields',
+      success: false
+    })
   }
 
-  res.send('Login successful');
+  if (!userExist) {
+    res.json({
+      msg: 'Invalid email or password'});
+  } else {
+    res.status(200).json({
+      msg: 'Login successful',
+      success: true
+    });
+  }
+  
   console.log(email, password);
 };
 

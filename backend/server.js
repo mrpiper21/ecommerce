@@ -8,7 +8,7 @@ const userRoute = require('./routes/userRoute')
 
 dotenv.config()
 
-connectDB()
+connectDB();
 
 const app = express()
 

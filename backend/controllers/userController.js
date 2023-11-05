@@ -16,8 +16,8 @@ const createUser = asyncHandler (async (req, res) => {
   const userExist = await User.findOne({ email });
 
   // Hash password
-  const salt = await bcrypt.genSalt(10)
-  const hashedPassword = await bcrypt.hash(password, salt)
+  // const salt = await bcrypt.genSalt(10)
+  // const hashedPassword = await bcrypt.hash(password, salt)
 
   if (!userExist) {
     const newUser = await User.create({
@@ -68,30 +68,37 @@ const createUser = asyncHandler (async (req, res) => {
 const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
-  const userExist = await User.findOne({ email });
+  //const userExist = await User.findOne({ email });
 
-  if (!email && !password) {
-    res.status(401).json({
+  if (!email || !password) {
+    return res.status(401).json({
       msg: 'provide all fields',
       success: false
     })
   }
 
-  if (userExist && await bcrypt.compare(password, userExist.password)) {
-    res.json({
-      _id: userExist?._id,
-      firstname: userExist?.firstname,
-      lastname: userExist?.lastname,
-      email: userExist?.email,
-      mobile: userExist?.mobile,
-      token: generateToken(userExist?._id),
+  
+
+  //if both match than you can do anything
+  let user = await User.findOne({ email: req.body.email })
+  if (!user) return res.status(400).send('invalid email and password!')
+ 
+  if (user && await user.isPasswordMatched(password)) {
+    return res.status(200).json({
+      _id: user?._id,
+      firstname: user?.firstname,
+      lastname: user?.lastname,
+      email: user?.email,
+      mobile: user?.mobile,
+      token: generateToken(user?._id)
     })
   } else {
-    res.status(400)
-    throw new Error("Invalid Credentials");
-  }
-  console.log(email, password);
+    return res.status(400).json({
+      msg:'invalid email and password!',
+      success: false,})
+    }
 })
+
 
 // Update a user
 const updateAuser = asyncHandler(async(req, res) => {
@@ -147,9 +154,8 @@ const deleteUser = asyncHandler(async(req, res) => {
 })
 
 module.exports = { createUser,
-  createAdmin,
   loginUser,
   getAllUser,
   getSingleUser,
   deleteUser,
-  updateAuser };
+  updateAuser }

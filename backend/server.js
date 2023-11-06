@@ -5,6 +5,7 @@ const connectDB = require('./config/db')
 const dotenv = require('dotenv')
 const PORT = process.env.port || 4000
 const userRoute = require('./routes/userRoute')
+const cookieParser = require("cookie-parser")
 
 dotenv.config()
 
@@ -14,6 +15,7 @@ const app = express()
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
+app.use(cookieParser())
 
 app.get('/', (req, res) => {
     res.set('Content-Type', 'text/html');

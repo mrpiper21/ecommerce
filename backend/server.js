@@ -5,14 +5,15 @@ const connectDB = require('./config/db')
 const dotenv = require('dotenv')
 const PORT = process.env.port || 4000
 const userRoute = require('./routes/userRoute')
+const productRoute = require('./routes/productRoute')
 const cookieParser = require("cookie-parser")
-
+const morgan = require('morgan')
 dotenv.config()
 
 connectDB();
 
 const app = express()
-
+app.use(morgan("dev"))
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 app.use(cookieParser())
@@ -24,6 +25,7 @@ app.get('/', (req, res) => {
   });
 
 app.use('/api/user', userRoute);
+app.use('/api/product', productRoute);
 app.listen(PORT, () => {
     console.log(`listening on ${PORT}`)
 })

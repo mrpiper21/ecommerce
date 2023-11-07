@@ -1,3 +1,4 @@
+const { query } = require("express")
 const Product = require("../models/productmodel")
 const asyncHandler = require("express-async-handler")
 const slugify = require("slugify")
@@ -53,9 +54,27 @@ const getAproduct = asyncHandler(async(req, res) => {
 });
 
 const getAllProduct = asyncHandler(async(req, res) => {
-    const allProducts = await Product.find()
     try {
-        res.json(allProducts)
+        const queryObj = { ...req.query}
+        const excludeFields = ["page", "sort", "limit", "fields"];
+        excludeFields.forEach((i) => delete queryObj[i])
+
+        let queryStr = JSON.stringify(queryObj)
+        queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`);
+
+        let allProducts = Product.find(JSON.parse(queryStr))
+
+        // sorting
+        if (req.query.sort) {
+            const sortBy = req.query.sort.split(",").join(" ")
+            allProducts = allProducts.sort(sortBy)
+        } else {
+            allProducts = allProducts.sort("-createdAt");
+        }
+
+        const products = await allProducts;
+
+        res.status(200).json(products)
     } catch (error) {
         throw new Error(error);
     }

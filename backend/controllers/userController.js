@@ -1,4 +1,3 @@
-const bcrypt = require('bcryptjs');
 const User = require('../models/userModel');
 const asyncHandler = require('express-async-handler');
 const { generateToken } = require('../config/jwtToken');
@@ -6,6 +5,7 @@ const validateMongoDbId = require('../utils/validateMongodb');
 const { generateRefreshToken } = require('../config/refreshtoken');
 const sendEmail = require('./emailController')
 const jwt = require("jsonwebtoken")
+const crypto = require('crypto')
 
 
 const createUser = asyncHandler (async (req, res) => {
@@ -264,6 +264,22 @@ const forgotPasswordToken = asyncHandler(async (req, res) => {
   }
 })
 
+const resetPassword = asyncHandler(async (req, res) => {
+  const password = req.body.password
+  const token = req.params.token
+  const hashedtoken = crypto.createHash('sha256').update(token).digest('hex')
+  const user = await User.findOne({
+    passworeResetToken: hashedtoken,
+    passwordResetExpires: { $gt: Date.now()}
+  })
+  if (!user) throw new Error('Token Expired, please try again later')
+  user.password= password;
+  user.passworeResetToken = undefined;
+  user.passwordResetExpires = undefined;
+  await user.save();
+  res.json(user)
+})
+
 module.exports = { createUser,
   loginUser,
   logout,
@@ -275,4 +291,5 @@ module.exports = { createUser,
   unblockUser,
   handleRefreshToken,
   updatePassword,
-  forgotPasswordToken }
+  forgotPasswordToken,
+  resetPassword }

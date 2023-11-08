@@ -4,6 +4,7 @@ const asyncHandler = require('express-async-handler');
 const { generateToken } = require('../config/jwtToken');
 const validateMongoDbId = require('../utils/validateMongodb');
 const { generateRefreshToken } = require('../config/refreshtoken');
+const sendEmail = require('./emailController')
 const jwt = require("jsonwebtoken")
 
 
@@ -20,8 +21,8 @@ const createUser = asyncHandler (async (req, res) => {
   const userExist = await User.findOne({ email });
 
   //Hash password
-  const salt = await bcrypt.genSalt(10)
-  const hashedPassword = await bcrypt.hash(password, salt)
+  // const salt = await bcrypt.genSalt(10)
+  // const hashedPassword = await bcrypt.hash(password, salt)
 
   if (!userExist) {
     const newUser = await User.create({
@@ -29,7 +30,7 @@ const createUser = asyncHandler (async (req, res) => {
       lastname,
       email,
       mobile,
-      password: hashedPassword
+      password
     });
     return res.status(201).json(newUser);
     
@@ -41,33 +42,6 @@ const createUser = asyncHandler (async (req, res) => {
   }
 })
 
-// const createAdmin = asyncHandler(async (req, res) => {
-//   const { firstname, lastname, email, mobile, password } = req.body
-
-//   if (!firstname || !lastname || !email || !mobile || !password){
-//     res.status(400)
-//     throw new Error('Please add all field')
-//   }
-
-//   const adminExist = await User.findOne( {email} )
-
-//   if (!adminExist) {
-//     const newAdmin = await User.create({
-//       firstname,
-//       lastname,
-//       email,
-//       mobile,
-//       password,
-//     })
-//     res.json({newAdmin})
-//   } else {
-//     res.status(400).json({
-//       msg: 'User already exist!',
-//       success: false
-//     });
-//   }
-
-// })
 
 const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
@@ -253,6 +227,43 @@ const unblockUser = asyncHandler(async(req, res) => {
   }
 })
 
+const updatePassword = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  const password = req.body.password;
+  validateMongoDbId(_id);
+  const user = await User.findById(_id);
+  if (password) {
+    user.password = password;
+    const updatePassword = await user.save();
+    res.json(updatePassword)
+  } else {
+    res.json(user)
+  }
+})
+
+const forgotPasswordToken = asyncHandler(async (req, res) => {
+  const email = req.body.email;
+  console.log(email)
+
+  const user = await User.findOne({ email });
+  if (!user) throw new Error('User not found with this email')
+  try {
+    const token = await user.createPasswordResetToken()
+    await user.save({ validateBeforeSave: false });
+    const resetURL = `Hi, Please follow this lind to reset your passord. The link is valid for 10 minutes. <a href='http://localhost:4000/api/user/reset-password/${token}'>click here</>`
+    const data = {
+      to: email,
+      text: "Hey user",
+      subject: 'Forgot Passwor Link',
+      html: resetURL
+    };
+    sendEmail(data)
+    res.json(token)
+  } catch (error) {
+    throw new Error(error)
+  }
+})
+
 module.exports = { createUser,
   loginUser,
   logout,
@@ -262,4 +273,6 @@ module.exports = { createUser,
   updateAuser ,
   blockUser,
   unblockUser,
-  handleRefreshToken }
+  handleRefreshToken,
+  updatePassword,
+  forgotPasswordToken }

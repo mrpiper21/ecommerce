@@ -8,6 +8,6 @@ router.delete('/:id', authMiddleware, isAdmin, deleteBlog)
 router.put('/:id', authMiddleware, isAdmin, updateBlog)
 router.get('/:id', getBlog)
 router.get('/', getAllBlogs)
-router.put('/likes', authMiddleware, isAdmin, likeBlog)
+router.put('/likes', authMiddleware, likeBlog)
 
 module.exports = router;

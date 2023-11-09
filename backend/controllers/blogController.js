@@ -34,6 +34,7 @@ const updateBlog = asyncHandler(async(req, res) => {
 
 const getBlog = asyncHandler(async(req, res) => {
     const _id = req.params.id;
+    console.log(_id)
     validateMongoDbId(_id)
     try {
         const blog = await Blog.findByIdAndUpdate(_id,
@@ -77,7 +78,8 @@ const deleteBlog = asyncHandler(async(req, res) => {
 })
 
 const likeBlog = asyncHandler(async(req, res) => {
-    const { blogId } = req.body;
+    console.log(req.body)
+    const { blogId } = req.body.blogId;
     validateMongoDbId(blogId)
     
     // Finf the blog which you want to like

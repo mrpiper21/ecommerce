@@ -1,11 +1,10 @@
-const mongoose = require('mongoose')
-const session = require('express-session')
 const express = require('express')
 const connectDB = require('./config/db')
 const dotenv = require('dotenv')
 const PORT = process.env.port || 4000
 const userRoute = require('./routes/userRoute')
 const productRoute = require('./routes/productRoute')
+const blogRoute = require('./routes/blogRoute')
 const cookieParser = require("cookie-parser")
 const morgan = require('morgan')
 dotenv.config()
@@ -26,6 +25,7 @@ app.get('/', (req, res) => {
 
 app.use('/api/user', userRoute);
 app.use('/api/product', productRoute);
+app.use('/api/blog', blogRoute)
 app.listen(PORT, () => {
     console.log(`listening on ${PORT}`)
 })

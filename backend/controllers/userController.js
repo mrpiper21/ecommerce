@@ -56,7 +56,7 @@ const loginUser = asyncHandler(async (req, res) => {
 
   // Check if the user is authorized by finding the email in the database
   let user = await User.findOne({ email: req.body.email })
-  if (!user) return res.status(400).send('invalid email and password!')
+  if (!user) return res.status(400).send('invalid email or password!')
   
   // if the user is validated we generate a token upon login is sucessful and refresh token whenever the page is refreshed
   if (user && await user.isPasswordMatched(password)) {
@@ -83,7 +83,7 @@ const loginUser = asyncHandler(async (req, res) => {
     })
   } else {
     return res.status(400).json({
-      msg:'invalid email and password!',
+      msg:'invalid email or password!',
       success: false,})
     }
 })
@@ -250,11 +250,11 @@ const forgotPasswordToken = asyncHandler(async (req, res) => {
   try {
     const token = await user.createPasswordResetToken()
     await user.save({ validateBeforeSave: false });
-    const resetURL = `Hi, Please follow this lind to reset your passord. The link is valid for 10 minutes. <a href='http://localhost:4000/api/user/reset-password/${token}'>click here</>`
+    const resetURL = `Hi, Please follow this link to reset your passord. The link is valid for 10 minutes. <a href='http://localhost:4000/api/user/reset-password/${token}'>click here</>`
     const data = {
       to: email,
       text: "Hey user",
-      subject: 'Forgot Passwor Link',
+      subject: 'Forgot Password Link',
       html: resetURL
     };
     sendEmail(data)

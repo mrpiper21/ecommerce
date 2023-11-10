@@ -42,7 +42,7 @@ const getBlog = asyncHandler(async(req, res) => {
                 $inc: { numViews: 1 },
             },
             { new: true }
-        );
+        ).populate('likes').populate('dislikes');
         res.json(blog)
     } catch (error) {
         throw new Error(error)

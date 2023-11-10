@@ -117,9 +117,51 @@ const likeBlog = asyncHandler(async(req, res) => {
     }
 })
 
+
+const disLikeBlog = asyncHandler(async(req, res) => {
+    // console.log(req.body)
+    const { blogId } = req.body;
+    validateMongoDbId(blogId)
+    
+    // Finf the blog which you want to like
+    const blog = await Blog.findById(blogId )
+    // find the login user
+    const loginUserId = req?.user?._id;
+    // find if the user has liked the post 
+    const isDisLiked =  blog?.isDisliked;
+    // find if the user has disliked the blog
+    const alreadyliked = blog?.likes?.find(
+        (userId => userId?.toString() === loginUserId?.toString())
+    );
+    if (alreadyliked){
+        const blog = await Blog.findByIdAndUpdate(blogId, {
+            $pull: { likes: loginUserId },
+            isliked: false,
+        },
+        { new: true })
+        res.json(blog)
+    }
+    if (isDisLiked){
+        const blog = await Blog.findByIdAndUpdate(blogId, {
+            $pull: { dislikes: loginUserId },
+            $set: { isDisliked: false },
+        },
+        { new: true })
+        res.json(blog)
+    } else {
+        const blog = await Blog.findByIdAndUpdate(blogId, {
+            dislikes: loginUserId,
+            isDisliked: true,
+        },
+        { new: true })
+        res.json(blog)
+    }
+})
+
 module.exports = { createBlog, 
     deleteBlog, 
     updateBlog, 
     getBlog, 
     getAllBlogs, 
-    likeBlog}
+    likeBlog, 
+    disLikeBlog}

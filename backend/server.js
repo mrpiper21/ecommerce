@@ -7,6 +7,7 @@ const productRoute = require('./routes/productRoute')
 const blogRoute = require('./routes/blogRoute')
 const cookieParser = require("cookie-parser")
 const morgan = require('morgan')
+const { createCategory } = require('./controllers/categoryController')
 dotenv.config()
 
 connectDB();
@@ -26,6 +27,7 @@ app.get('/', (req, res) => {
 app.use('/api/user', userRoute);
 app.use('/api/product', productRoute);
 app.use('/api/blog', blogRoute)
+app.use('/api/', createCategory)
 app.listen(PORT, () => {
     console.log(`listening on ${PORT}`)
 })

@@ -1,8 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const categoryController = require('../controllers/categoryController')
-const authMiddleware = require('../middleware/authMiddleware')
+const { authMiddleware, isAdmin } = require('../middleware/authmiddleware')
 
-router.get('/category', authMiddleware, categoryController )
-
+router.post("/", authMiddleware, isAdmin, categoryController);
 module.exports = router

@@ -1,13 +1,13 @@
 const express = require('express')
 const connectDB = require('./config/db')
 const dotenv = require('dotenv')
-const PORT = process.env.port || 4000
+const PORT = 5000
 const userRoute = require('./routes/userRoute')
 const productRoute = require('./routes/productRoute')
 const blogRoute = require('./routes/blogRoute')
 const cookieParser = require("cookie-parser")
 const morgan = require('morgan')
-const categoryRoute = require('./routes/categoryRoute')
+const categoryRoute = require('./routes/productCategoryRoute')
 dotenv.config()
 
 connectDB();
@@ -24,8 +24,8 @@ app.get('/', (req, res) => {
     res.set('X-Custom-Header', 'Some value'); // Error: Cannot set headers after they are sent to the client
   });
 
-app.use('/api/user', userRoute);
-app.use('/api/product', productRoute);
+app.use('/api/v1/user', userRoute);
+app.use('/api/v1/product', productRoute);
 app.use('/api/blog', blogRoute)
 app.use('/api/category', categoryRoute)
 app.listen(PORT, () => {

@@ -8,6 +8,7 @@ const blogRoute = require('./routes/blogRoute')
 const cookieParser = require("cookie-parser")
 const morgan = require('morgan')
 const categoryRoute = require('./routes/productCategoryRoute')
+const blogCatRouter = require('./routes/blogCatRoute')
 dotenv.config()
 
 connectDB();
@@ -18,16 +19,18 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 app.use(cookieParser())
 
+//app.set('views', './views');
+//app.set('view engine', 'ejs');
+
 app.get('/', (req, res) => {
-    res.set('Content-Type', 'text/html');
-    res.send('<h1>Hello, world!</h1>');
-    res.set('X-Custom-Header', 'Some value'); // Error: Cannot set headers after they are sent to the client
+    res.send('<h1>Hello world</h1>') // Error: Cannot set headers after they are sent to the client
   });
 
 app.use('/api/v1/user', userRoute);
 app.use('/api/v1/product', productRoute);
 app.use('/api/blog', blogRoute)
 app.use('/api/category', categoryRoute)
+app.use('/api/blogcategory', blogCatRouter)
 app.listen(PORT, () => {
     console.log(`listening on ${PORT}`)
 })

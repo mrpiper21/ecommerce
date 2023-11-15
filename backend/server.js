@@ -9,6 +9,7 @@ const cookieParser = require("cookie-parser")
 const morgan = require('morgan')
 const categoryRoute = require('./routes/productCategoryRoute')
 const blogCatRouter = require('./routes/blogCatRoute')
+const couponRoute = require('./routes/couponRoute')
 dotenv.config()
 
 connectDB();
@@ -28,9 +29,11 @@ app.get('/', (req, res) => {
 
 app.use('/api/v1/user', userRoute);
 app.use('/api/v1/product', productRoute);
+app.use('api/coupon', couponRoute)
 app.use('/api/blog', blogRoute)
 app.use('/api/category', categoryRoute)
 app.use('/api/blogcategory', blogCatRouter)
+
 app.listen(PORT, () => {
     console.log(`listening on ${PORT}`)
 })

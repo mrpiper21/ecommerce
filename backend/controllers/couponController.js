@@ -22,6 +22,7 @@ const getAllCoupons = asyncHandler(async(req, res) => {
 
 const updateCoupon = asyncHandler(async(req, res) => {
     const _id = req.params.id
+    console.log(_id)
     validateMongoDbId(_id)
     try {
         const couponUpdate = await Coupon.findByIdAndUpdate(_id,
@@ -39,7 +40,7 @@ const deletCoupon = asyncHandler(async(req, res) => {
     const _id = req.params.id;
     validateMongoDbId(_id)
     try {
-        const delCoupon = Coupon.findByIdAndDelete(_id)
+        const delCoupon = await Coupon.findByIdAndDelete(_id)
         res.json(delCoupon)
     } catch (error) {
         throw new Error(error)

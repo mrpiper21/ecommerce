@@ -27,9 +27,9 @@ app.get('/', (req, res) => {
     res.send('<h1>Hello world</h1>') // Error: Cannot set headers after they are sent to the client
   });
 
-app.use('/api/v1/user', userRoute);
-app.use('/api/v1/product', productRoute);
-app.use('api/coupon', couponRoute)
+app.use('/api/user', userRoute);
+app.use('/api/product', productRoute);
+app.use('/api/coupon', couponRoute)
 app.use('/api/blog', blogRoute)
 app.use('/api/category', categoryRoute)
 app.use('/api/blogcategory', blogCatRouter)
